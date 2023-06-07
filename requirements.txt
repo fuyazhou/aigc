@@ -1,0 +1,8 @@
+torch
+langchain
+sentence_transformers
+google-search-results
+duckduckgo-search
+openai
+tiktoken
+faiss-cpu
