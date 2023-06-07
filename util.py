@@ -22,9 +22,11 @@ from langchain.schema import (
 )
 
 from config import *
+import os
+
+os.environ["OPENAI_API_KEY"] = openai_api_key
 
 logger = getLogger()
-openai.api_key = openai_api_key
 
 chat = ChatOpenAI(
     max_tokens=2048,
@@ -36,7 +38,7 @@ def summarize(text):
     logger.info(f"start summarize input is {text}")
     try:
         messages = [
-            SystemMessage(content="You are a helpful assistant that summarizes documents."),
+            SystemMessage(content="You are a helpful assistant that summarizes documents. let us step by step."),
             HumanMessage(content=text)
         ]
         result = chat(messages)
@@ -177,9 +179,10 @@ def save_search_content(query, data_path, related_questions, organic_results):
             df2 = pd.concat([data, df2])
         logger.info("Saving df2 to data_path")
         df2.to_csv(data_path, index=False)
-        return df2
+        # return df2
+        return None
     except Exception as e:
-        logger.error(f"An error occurred: {str(e)}")
+        logger.error(f"save_search_content An error occurred: {str(e)}")
         return None
 
 
