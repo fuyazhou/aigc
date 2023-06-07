@@ -25,6 +25,7 @@ from config import *
 from util import summarize, get_google_search_results, get_goolge_related_questions
 from util import get_goolge_organic_results, save_search_content, similarity_search
 import os, logging
+
 os.environ["OPENAI_API_KEY"] = openai_api_key
 
 logging.basicConfig(filename='app.log', level=logging.DEBUG,
@@ -32,7 +33,6 @@ logging.basicConfig(filename='app.log', level=logging.DEBUG,
                     datefmt='%Y-%m-%d %H:%M:%S')
 
 logger = logging.getLogger("main class : ")
-
 
 chat = ChatOpenAI(
     max_tokens=2048,
@@ -49,18 +49,16 @@ def generate_data(query,
     logger.info("Google search results fetched successfully")
 
     logger.info("Fetching related questions from Google search results")
-    goolge_related_questions = get_goolge_related_questions(google_search_results)
+    google_related_questions = get_goolge_related_questions(google_search_results)
     logger.info("Related questions fetched successfully")
 
     logger.info("Fetching organic results from Google search results")
-    goolge_organic_results = get_goolge_organic_results(google_search_results)
-    logger.info(f"Organic results fetched successfully =={goolge_organic_results}")
+    google_organic_results = get_goolge_organic_results(google_search_results)
+    logger.info(f"Organic results fetched successfully =={google_organic_results}")
 
     logger.info("Saving search content")
-    save_search_content(query, data_path, goolge_related_questions, goolge_organic_results)
+    save_search_content(query, data_path, google_related_questions, google_organic_results)
     logger.info("Search content saved successfully")
-
-
 
 
 # Press the green button in the gutter to run the script.
