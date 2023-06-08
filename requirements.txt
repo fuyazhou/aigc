@@ -6,3 +6,5 @@ duckduckgo-search
 openai
 tiktoken
 faiss-cpu
+pandas
+fire

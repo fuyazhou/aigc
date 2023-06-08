@@ -25,12 +25,17 @@ from config import *
 import os
 
 os.environ["OPENAI_API_KEY"] = openai_api_key
-
-logger = getLogger()
-
+embeddings = OpenAIEmbeddings()
 chat = ChatOpenAI(
     max_tokens=2048,
 )
+
+
+# from temp_model import *
+# chat = chat
+# embeddings = embeddings
+
+logger = getLogger()
 
 
 def summarize(text):
@@ -38,7 +43,7 @@ def summarize(text):
     logger.info(f"start summarize input is {text}")
     try:
         messages = [
-            SystemMessage(content="You are a helpful assistant that summarizes documents. let us step by step."),
+            SystemMessage(content=summary_prompt),
             HumanMessage(content=text)
         ]
         result = chat(messages)
@@ -111,7 +116,7 @@ def get_goolge_organic_results(json_data):
                 result_strings.append(result_string)
             # 将所有结果字符串拼接为一个字符串并返回
         if len(result_strings) > 0:
-            result_strings = [result_strings[i] + result_strings[i + 1] for i in range(0, len(result_strings), 2)]
+            result_strings = [result_strings[i] + result_strings[i + 1] for i in range(0, len(result_strings) - 1, 2)]
         return result_strings
     except Exception as e:
         logger.info("start get_goolge_organic_results somthing wrong")
@@ -162,7 +167,7 @@ def get_goolge_related_questions(data):
         return []
 
 
-def save_search_content(query, data_path, related_questions, organic_results):
+def save_search_content(query, data_path, related_questions, organic_results, faiss_path):
     try:
         logger.info("start save_search_content")
         logger.info(f"organic_results: {organic_results}")
@@ -178,28 +183,36 @@ def save_search_content(query, data_path, related_questions, organic_results):
             data = pd.read_csv(data_path)
             df2 = pd.concat([data, df2])
         logger.info("Saving df2 to data_path")
-        df2.to_csv(data_path, index=False)
+        df2.to_csv(data_path, index=False, encoding="utf_8")
+
+        logger.info(f"start save search content index, creating it...")
+        loader = CSVLoader(file_path=data_path, encoding="utf_8")
+        docs = loader.load()
+        db = FAISS.from_documents(docs, embeddings)
+        db.save_local(faiss_path)
+        logger.info(f"Index created and saved successfully.")
+        logger.info(f"Index path is : {faiss_path}")
+
         # return df2
-        return None
+        return summary
     except Exception as e:
         logger.error(f"save_search_content An error occurred: {str(e)}")
-        return None
+        return "save_search_content An error occurred"
 
 
-def similarity_search(faiss_index_path, data_path, query):
+def similarity_search(faiss_path, data_path, query):
     logger.info(f"start similarity_search, input is {query}")
     try:
-        embeddings = OpenAIEmbeddings()
-        if not os.path.exists(faiss_index_path):
+        if not os.path.exists(faiss_path):
             logger.info(f"Index does not exist, creating it...")
             loader = CSVLoader(file_path=data_path)
             docs = loader.load()
             db = FAISS.from_documents(docs, embeddings)
-            db.save_local(faiss_index_path)
+            db.save_local(faiss_path)
             logger.info(f"Index created and saved successfully.")
         else:
             logger.info(f"Loading existing index...")
-            db = FAISS.load_local(faiss_index_path, embeddings)
+            db = FAISS.load_local(faiss_path, embeddings)
             logger.info(f"Index loaded successfully.")
 
         search_results = db.similarity_search(query)
