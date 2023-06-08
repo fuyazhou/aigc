@@ -30,7 +30,6 @@ chat = ChatOpenAI(
     max_tokens=2048,
 )
 
-
 # from temp_model import *
 # chat = chat
 # embeddings = embeddings
@@ -38,7 +37,7 @@ chat = ChatOpenAI(
 logger = getLogger()
 
 
-def summarize(text):
+def summarize(text, summary_prompt):
     # 根据search的document 生成 summary
     logger.info(f"start summarize input is {text}")
     try:
@@ -172,7 +171,10 @@ def save_search_content(query, data_path, related_questions, organic_results, fa
         logger.info("start save_search_content")
         logger.info(f"organic_results: {organic_results}")
 
-        summary = [summarize(i) for i in organic_results]
+        summary = [summarize(i, summary_prompt) for i in organic_results]
+
+        logger.info("summary again")
+        summary = [summarize(i, summary_prompt_2) for i in summary]
 
         organic_results_dict = {"query": query, "content_type": "organic_results", "content": organic_results,
                                 "summary": summary}

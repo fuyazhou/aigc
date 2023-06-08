@@ -88,21 +88,28 @@ def generate_article(query,
         logger.info("Similarity search finished")
 
         # Generate chat messages.
+
+        # messages = [
+        #     SystemMessage(content=generate_prompt),
+        #     HumanMessage(content=summary)
+        # ]
+        # logger.info("Chat messages generated")
+        #
+        # # Chat with the model.
+        # logger.info("Chatting with the model")
+        # result = chat(messages)
+        # logger.info("Chat finished")
+        #
+        # # Get the article.
+        # logger.info("Getting the article")
+        # article = result.content
+
         logger.info("Generating chat messages")
-        messages = [
-            SystemMessage(content=generate_prompt),
-            HumanMessage(content=summary)
-        ]
-        logger.info("Chat messages generated")
+        article = chat_with_model(generate_prompt, summary)
 
-        # Chat with the model.
-        logger.info("Chatting with the model")
-        result = chat(messages)
-        logger.info("Chat finished")
+        logger.info("Generating chat messages again")
+        article = chat_with_model(generate_prompt_2, article)
 
-        # Get the article.
-        logger.info("Getting the article")
-        article = result.content
         logger.info("Article fetched successfully")
 
         # Log the end of the function.
@@ -125,6 +132,26 @@ def generate_article(query,
         logger.warning("Generating article something wrong")
         logger.warning(f"An error occurred: {str(e)}")
         return "Generating article something wrong"
+
+
+def chat_with_model(generate_prompt, summary):
+    logger = logging.getLogger(__name__)
+    messages = [
+        SystemMessage(content=generate_prompt),
+        HumanMessage(content=summary)
+    ]
+    logger.info("Chat messages generated")
+
+    try:
+        # Chat with the model.
+        logger.info("Chatting with the model")
+        result = chat(messages)
+        article = result.content
+        return article
+
+    except Exception as e:
+        logger.error(f"Error occurred: {e}")
+        return summary
 
 
 def main(generate_data_query: str = "None", generate_article_query: str = "None"):

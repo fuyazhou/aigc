@@ -10,7 +10,13 @@ faiss_index_path = "data/faiss_index"
 
 # summary prompt : 根据search文章生成summary
 summary_prompt = "You are a helpful assistant that summarizes documents. let us step by step."
+summary_prompt_2 = "You are a helpful assistant that summarizes documents. let us step by step."
 
 # generate prompt : 根据summary生成文章的prompt
 generate_prompt = "You are a helpful assistant that Write an article of about 1500 words based on the following " \
                   "summary, article should be fluent, storytelling, and respectful of facts."
+
+
+generate_prompt_2 = "You are a helpful assistant that Write an article of about 1500 words based on the following " \
+                  "summary, article should be fluent, storytelling, and respectful of facts."
+
