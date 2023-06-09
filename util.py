@@ -115,7 +115,7 @@ def get_goolge_organic_results(json_data):
                 result_strings.append(result_string)
             # 将所有结果字符串拼接为一个字符串并返回
         if len(result_strings) > 0:
-            result_strings = [result_strings[i] + result_strings[i + 1] for i in range(0, len(result_strings) - 1, 2)]
+            result_strings = ["\n".join(result_strings[i:i + 3]) for i in range(0, len(result_strings), 3)]
         return result_strings
     except Exception as e:
         logger.info("start get_goolge_organic_results somthing wrong")

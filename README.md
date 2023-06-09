@@ -31,4 +31,21 @@ python main.py --generate_data_query "知乎的商業模式"
 python main.py --generate_article_query "知乎的商業模式"
 ```
 
+http服务
+```
+启动服务： python server.py
+
+
+
+请求入参示例：
+
+POST /generate HTTP/1.1
+Content-Type: application/json
+{
+    "generate_data_query": "你的query",
+    "generate_article_query": "你的query"
+}
+```
+
+
 
