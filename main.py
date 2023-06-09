@@ -57,6 +57,7 @@ def generate_data(query,
     logger.info("Saving search content")
     content = save_search_content(query, data_path, google_related_questions, google_organic_results, faiss_path)
     logger.info("Search content saved successfully")
+    print("\n\n==================================\n\n")
     print(f"Search content saved successfully, result = {content}")
     return content
 
@@ -107,10 +108,12 @@ def generate_article(query,
 
         logger.info("Generating chat messages")
         article = chat_with_model(generate_prompt, summary)
+        print("\n\n==================================\n\n")
         print("first Generated article for query: {}".format(article))
 
         logger.info("Generating chat messages again")
         article = chat_with_model(generate_prompt_2, article)
+        print("\n\n==================================\n\n")
         print("second  Generated article for query: {}".format(article))
 
         logger.info("Article fetched successfully")
@@ -165,6 +168,7 @@ def main(generate_data_query: str = "None", generate_article_query: str = "None"
         print("\n==================================\n")
         print(f"start article data query is {generate_article_query}")
         data = generate_article(generate_article_query)
+        print("\n\n==================================\n\n")
         print(f"generate article done, data =\n\n  {data}")
         print("\n\n")
 

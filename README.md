@@ -27,9 +27,17 @@ pip install -r requirements.txt
 
 生成数据和生成文章的示例：
 ```
-python main.py --generate_data_query "知乎的商業模式"
-python main.py --generate_article_query "知乎的商業模式"
+python3 main.py --generate_data_query "amazon bussiness model"
+python3 main.py --generate_article_query " Amazon was one of the first companies to offer same-day delivery, and it has since expanded its delivery options to include two-hour delivery, in-car delivery,"
 ```
+如果查询特征网站的 在query之后加上:  site:website
+
+
+demo:
+```
+python3 main.py --generate_data_query "Tesla bussiness model. site:twitter.com "
+```
+
 
 http服务
 ```
