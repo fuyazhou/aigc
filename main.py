@@ -57,6 +57,7 @@ def generate_data(query,
     logger.info("Saving search content")
     content = save_search_content(query, data_path, google_related_questions, google_organic_results, faiss_path)
     logger.info("Search content saved successfully")
+    print(f"Search content saved successfully, result = {content}")
     return content
 
 
@@ -106,15 +107,15 @@ def generate_article(query,
 
         logger.info("Generating chat messages")
         article = chat_with_model(generate_prompt, summary)
+        print("first Generated article for query: {}".format(article))
 
         logger.info("Generating chat messages again")
         article = chat_with_model(generate_prompt_2, article)
+        print("second  Generated article for query: {}".format(article))
 
         logger.info("Article fetched successfully")
-
         # Log the end of the function.
         logger.info("Generated article for query: {}".format(article))
-        print("Generated article for query: {}".format(article))
 
         # 保存结果到数据库
         article_dict = {"query": [query], "summary": [summary], "article": [article]}

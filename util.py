@@ -196,7 +196,7 @@ def save_search_content(query, data_path, related_questions, organic_results, fa
         logger.info(f"Index path is : {faiss_path}")
 
         # return df2
-        return summary
+        return "\n".join(summary)
     except Exception as e:
         logger.error(f"save_search_content An error occurred: {str(e)}")
         return "save_search_content An error occurred"
