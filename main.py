@@ -200,7 +200,7 @@ def main(generate_data_query: str = "None", generate_article_query: str = "None"
         print("please input generate_data_query or generate_article_query")
 
 
-# main.py --generate_data_query Apple company business model --generate_article_query Apple company business model
+# python3 main.py --generate_data_query "Apple company business model" --generate_article_query "Apple company business model"
 if __name__ == '__main__':
     fire.Fire(main)
     # generate_data('Apple company business model')
