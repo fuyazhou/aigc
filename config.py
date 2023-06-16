@@ -9,13 +9,11 @@ article_txt_path = "data/article.txt"
 faiss_index_path = "data/faiss_index"
 
 # summary prompt : 根据search文章生成summary
-summary_prompt = "I want you to act as a text summarizer to help me create a concise summary of the text I provide. " \
-                 "The summary expressing the key points and concepts written in the original text and adding your interpretations. let us step by step."
-summary_prompt_2 = "You are a helpful assistant that Write an article of about 1500 words based on the following" \
-                   "summary, article should be fluent, storytelling, and respectful of facts."
+summary_prompt = "Generate an abstract based on the following keywords and key sentences, the logic should be clear, about 200 words, Let's work this out in a step by step way to be sure we have the right answer."
+
+summary_prompt_2 = "You are a helpful assistant that Write an abstract of about 400 words based on the following summary, article should be fluent, storytelling, and respectful of facts."
 
 # generate prompt : 根据summary生成文章的prompt
-generate_prompt = "I want you to act as a skilled web content writer with years of experience writing detailed about us pages for websites, Write a high-quality page based on this content."
+generate_prompt = "I hope you are a skilled writer with many years of writing experience and write a high-quality essay based on the summary below. The essay should be fluent, respectful of facts, and highly readable, with a word count between 1500 and 2500. Let's work this out in a step by step way to be sure we have the right answer."
 
-generate_prompt_2 = "You are a helpful assistant that Write an article of about 1500 words based on the following" \
-                    "summary, article should be fluent, storytelling, and respectful of facts."
+generate_prompt_2 = "Polish the article below to make it grammatically correct and logically correct, and output the polished article directly."
