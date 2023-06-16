@@ -217,6 +217,7 @@ def similarity_search(faiss_path, data_path, query):
             db = FAISS.load_local(faiss_path, embeddings)
             logger.info(f"Index loaded successfully.")
 
+        openai.api_key = openai_api_key
         search_results = db.similarity_search(query)
 
         search_res = search_results[0].page_content
