@@ -17,7 +17,7 @@ logger = logging.getLogger()
 
 os.environ["OPENAI_API_KEY"] = openai_api_key
 chat = ChatOpenAI(
-    max_tokens=2048,
+    model_name="gpt-3.5-turbo-16k"
 )
 
 
