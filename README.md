@@ -2,10 +2,13 @@
 
 该项目提供生成特定主题相关的文章。
 ```
-1、首先使用了 Google 搜索的相关问题
-2、summary搜索结果
-3、然后使用 FAISS 对其进行相似度搜索
-4、最后使用 OpenAI chatGPT 生成文章。
+1、根据query prompt +渠道（包括不限于谷歌、reddit、Twitter等） 搜索内容 存放在数据库 采集不同的数据渠道 形成N种数据类型（不同渠道就是不同的数据类型）
+2、根据1的内容+GPT4+summary-prompt1  通过不同的**summary- prompt1**（根据**summary- prompt1**生成报刊/杂志/评论等各种体裁）生成不同的类型的语料summary1（**要点** 大概100-200字）
+3、根据2的内容+GPT4+summary-prompt 2 对第一次summary1进行生成的内容补充形成summary2 （**大纲** 大概200-500字）
+
+4、根据3的内容+GPT4+generate prompt 生成终极文章（**完整文章** 大概1500-2500字）
+5、根据4的内容+GPT4+generate prompt2 对终极进行语法和逻辑修正
+6、对生成的文章，前端调用以后需要进行数据追踪
 ```
 
 流程图：
@@ -35,7 +38,7 @@ python3 main.py --generate_article_query " Amazon was one of the first companies
 
 demo:
 ```
-python3 main.py --generate_data_query "Tesla bussiness model. site:twitter.com "
+python3 main.py --generate_data_query "Apple company business model"
 ```
 
 
@@ -50,8 +53,7 @@ http服务
 POST /generate HTTP/1.1
 Content-Type: application/json
 {
-    "generate_data_query": "你的query",
-    "generate_article_query": "你的query"
+    "generate_data_query": "你的query"
 }
 ```
 
