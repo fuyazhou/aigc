@@ -5,21 +5,15 @@ app = Flask(__name__)
 
 
 @app.route('/generate', methods=['POST'])
-def generate():
-    generate_data_query = request.json.get('generate_data_query', 'None')
-    generate_article_query = request.json.get('generate_article_query', 'None')
-    result = {}
+def generate_article():
+    generate_data_query = request.json.get('generate_data_query')
 
-    if generate_data_query != "None":
-        result['generate_data'] = generate_data(generate_data_query)
+    if generate_data_query:
+        summary = generate_data(generate_data_query)
+        article = generate_article(summary)
+        return {'article': article}
 
-    if generate_article_query != "None":
-        result['generate_article'] = generate_article(generate_article_query)
-
-    if generate_data_query == "None" and generate_article_query == "None":
-        return "Please input generate_data_query or generate_article_query"
-
-    return jsonify(result)
+    return {'error': 'Please provide a generate_data_query parameter.'}
 
 
 if __name__ == '__main__':

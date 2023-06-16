@@ -50,9 +50,10 @@ def generate_data(query,
     google_search_results = get_google_search_results(query)
     logger.info("Google search results fetched successfully")
 
-    logger.info("Fetching related questions from Google search results")
-    google_related_questions = get_goolge_related_questions(google_search_results)
-    logger.info("Related questions fetched successfully")
+    # logger.info("Fetching related questions from Google search results")
+    # google_related_questions = get_goolge_related_questions(google_search_results)
+    google_related_questions = ""
+    # logger.info("Related questions fetched successfully")
 
     logger.info("Fetching organic results from Google search results")
     google_organic_results = get_goolge_organic_results(google_search_results)
@@ -91,27 +92,11 @@ def generate_article(query,
         print("\n\n==================================\n\n")
 
         # Perform similarity search.
-        logger.info("Performing similarity search")
-        summary = similarity_search(faiss_path, data_path, query)
-        logger.info("Similarity search finished")
+        # logger.info("Performing similarity search")
+        # summary = similarity_search(faiss_path, data_path, query)
+        # logger.info("Similarity search finished")
 
-        # Generate chat messages.
-
-        # messages = [
-        #     SystemMessage(content=generate_prompt),
-        #     HumanMessage(content=summary)
-        # ]
-        # logger.info("Chat messages generated")
-        #
-        # # Chat with the model.
-        # logger.info("Chatting with the model")
-        # result = chat(messages)
-        # logger.info("Chat finished")
-        #
-        # # Get the article.
-        # logger.info("Getting the article")
-        # article = result.content
-
+        summary = query
         logger.info("Generating chat messages")
         article = chat_with_model(generate_prompt, summary)
         print("\n\n==================================\n\n")
@@ -137,7 +122,7 @@ def generate_article(query,
         logger.info("translate second  Generated article into chinese:\n {}".format(cn_article))
 
         # 保存结果到数据库
-        article_dict = {"query": [query], "summary": [summary], "article": [article + "\n\n\n\n" + cn_article]}
+        article_dict = {"query": [query], "summary": [summary], "article": [article + "\n\n#@#@#\n\n" + cn_article]}
         df = pd.DataFrame.from_dict(article_dict)
 
         if os.path.isfile(article_path):
@@ -180,30 +165,21 @@ def chat_with_model(generate_prompt, summary):
         return summary
 
 
-def main(generate_data_query: str = "None", generate_article_query: str = "None"):
+def main(generate_data_query: str = "None"):
     if generate_data_query != "None":
         print("\n==================================\n")
         print(f"start generate data query is {generate_data_query}")
-        data = generate_data(generate_data_query)
-        # data = "\n".join(data)
-        # print(f"generate data done, data =  {data}")
-    if generate_article_query != "None":
-        # print("\n==================================\n")
-        # print(f"start article data query is {generate_article_query}")
-        data = generate_article(generate_article_query)
-        # print("\n\n==================================\n\n")
-        # print(f"generate article done, data =\n\n  {data}")
-        # print("\n\n")
+        summary = generate_data(generate_data_query)
 
-    if generate_data_query == "None" and generate_article_query == "None":
         print("\n==================================\n")
-        print("please input generate_data_query or generate_article_query")
+        article = generate_article(summary)
+        print("\n\n==================================\n\n")
+
+    if generate_data_query == "None":
+        print("\n==================================\n")
+        print("please input generate_article_query")
 
 
-# python3 main.py --generate_data_query "Apple company business model" --generate_article_query "Apple company business model"
+# python3 main.py --generate_data_query "Apple company business model"
 if __name__ == '__main__':
     fire.Fire(main)
-    # generate_data('Apple company business model')
-    # article = generate_article('Apple company business model')
-
-# python main.py --generate_data_query Apple company business model

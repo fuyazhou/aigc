@@ -116,7 +116,7 @@ def get_goolge_organic_results(json_data):
             # 将所有结果字符串拼接为一个字符串并返回
         if len(result_strings) > 0:
             result_strings = ["\n".join(result_strings[i:i + 3]) for i in range(0, len(result_strings), 3)]
-        return result_strings
+        return result_strings[0:1]
     except Exception as e:
         logger.info("start get_goolge_organic_results somthing wrong")
         return []
@@ -171,7 +171,7 @@ def save_search_content(query, data_path, related_questions, organic_results, fa
         logger.info("start save_search_content")
         logger.info(f"organic_results: {organic_results}")
 
-        summary = [summarize(i, summary_prompt) for i in organic_results]
+        summary = [summarize(query + "\n" + str(i), summary_prompt) for i in organic_results]
 
         logger.info("summary again")
         summary = [summarize(i, summary_prompt_2) for i in summary]
@@ -187,19 +187,21 @@ def save_search_content(query, data_path, related_questions, organic_results, fa
         logger.info("Saving df2 to data_path")
         df2.to_csv(data_path, index=False, encoding="utf_8")
 
-        logger.info(f"start save search content index, creating it...")
-        loader = CSVLoader(file_path=data_path, encoding="utf_8")
-        docs = loader.load()
-        db = FAISS.from_documents(docs, embeddings)
-        db.save_local(faiss_path)
-        logger.info(f"Index created and saved successfully.")
-        logger.info(f"Index path is : {faiss_path}")
+        # 取消索引
+        # logger.info(f"start save search content index, creating it...")
+        # loader = CSVLoader(file_path=data_path, encoding="utf_8")
+        # docs = loader.load()
+        # db = FAISS.from_documents(docs, embeddings)
+        # db.save_local(faiss_path)
+        # logger.info(f"Index created and saved successfully.")
+        # logger.info(f"Index path is : {faiss_path}")
 
         # return df2
         return "\n".join(summary)
     except Exception as e:
         logger.error(f"save_search_content An error occurred: {str(e)}")
-        return "save_search_content An error occurred"
+        logger.error(f"just return query : {query}")
+        return query
 
 
 def similarity_search(faiss_path, data_path, query):
