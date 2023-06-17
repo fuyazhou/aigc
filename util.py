@@ -168,10 +168,16 @@ def get_goolge_related_questions(data):
 
 def save_search_content(query, data_path, related_questions, organic_results, faiss_path):
     try:
+        text = query
+        index = text.find("site:")
+        if index != -1:
+            text = text[:index].strip()
+        # print(text)
+
         logger.info("start save_search_content")
         logger.info(f"organic_results: {organic_results}")
 
-        summary = [summarize(query + "\n" + str(i), summary_prompt) for i in organic_results]
+        summary = [summarize(text + "\n" + str(i), summary_prompt) for i in organic_results]
 
         logger.info("summary again")
         summary = [summarize(i, summary_prompt_2) for i in summary]
