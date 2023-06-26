@@ -4,7 +4,7 @@
 import torch
 from diffusers import StableDiffusionPipeline, UNet2DConditionModel
 
-model_path = "/content/diffusers/examples/text_to_image/sd-pokemon-model/checkpoint-15"
+model_path = "checkpoint-path"
 
 unet = UNet2DConditionModel.from_pretrained(model_path + "/unet")
 pipe = StableDiffusionPipeline.from_pretrained("CompVis/stable-diffusion-v1-4", unet=unet)
