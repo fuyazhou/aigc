@@ -22,8 +22,8 @@ output_dir： 保存模型的文件夹
 resume_from_checkpoint：加载训练的checkpoint，然后继续训练， latest
 
 
-export MODEL_NAME="CompVis/stable-diffusion-v1-4"
-export TRAIN_DATA_DIR="/home/featurize/work/yazhou/llm_model/sd_1_4/data"
+export MODEL_NAME="/root/aigc/stable-diffusion-v1-4"
+export TRAIN_DATA_DIR="/root/pretrain-500"
 
 accelerate launch --mixed_precision="fp16"  pretrain.py \
   --pretrained_model_name_or_path=$MODEL_NAME \

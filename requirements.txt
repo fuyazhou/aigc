@@ -1,7 +1,9 @@
-accelerate>=0.16.0
-torchvision
-transformers>=4.25.1
-datasets
+accelerate==0.18.0
+torchvision==0.15.1
+torch==2.0.0
+torchaudio==2.0.1
+transformers==4.28.1
+datasets==2.11.0
 ftfy
-tensorboard
-Jinja2
+tensorboard==2.13.0
+Jinja2==3.1.2
