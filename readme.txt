@@ -56,3 +56,49 @@ accelerate launch --mixed_precision="fp16" --multi_gpu  pretrain.py \
 
 
 
+
+fine_tuning:
+
+无标签 uncondition fine tuning
+export MODEL_NAME="/root/aigc/stable-diffusion-v1-4"
+export TRAIN_DATA_DIR="/root/pretrain-500"
+
+accelerate launch --mixed_precision="fp16"  fine_tuning_uncondition.py \
+  --pretrained_model_name_or_path=$MODEL_NAME \
+  --train_data_dir=$TRAIN_DATA_DIR \
+  --resolution=224 --center_crop \
+  --use_ema \
+  --train_batch_size=5 \
+  --gradient_accumulation_steps=4 \
+  --gradient_checkpointing \
+  --max_train_steps=15000 \
+  --learning_rate=1e-05 \
+  --max_grad_norm=1 \
+  --lr_scheduler="constant" --lr_warmup_steps=0 \
+  --output_dir="sd-model"
+
+
+
+
+
+
+有标签condition fine tuning
+
+export MODEL_NAME="/root/aigc/stable-diffusion-v1-4"
+export TRAIN_DATA_DIR="/root/pretrain-500"
+export NAME2CLASS_DIR="LactMed_sum.csv"
+
+accelerate launch --mixed_precision="fp16"  fine_tuning_condition.py \
+  --pretrained_model_name_or_path=$MODEL_NAME \
+  --train_data_dir=$TRAIN_DATA_DIR \
+  --name2class_path=$NAME2CLASS_DIR \
+  --resolution=224 --center_crop \
+  --use_ema \
+  --train_batch_size=5 \
+  --gradient_accumulation_steps=4 \
+  --gradient_checkpointing \
+  --max_train_steps=15000 \
+  --learning_rate=1e-05 \
+  --max_grad_norm=1 \
+  --lr_scheduler="constant" --lr_warmup_steps=0 \
+  --output_dir="sd-model"
