@@ -1,0 +1,1 @@
+nohup python vocabulary.py > vocabulary.log &

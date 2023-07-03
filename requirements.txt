@@ -1,9 +1,5 @@
 langchain=0.0.192
-google-search-results
-duckduckgo-search
 openai
-tiktoken
-faiss-cpu
 pandas
+mysql-connector
 fire
-flask

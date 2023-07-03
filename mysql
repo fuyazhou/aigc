@@ -1,0 +1,23 @@
+DROP TABLE IF EXISTS influence_vocab;
+create table influence_vocab1
+(
+    id           int auto_increment
+        primary key,
+    data_id      varchar(125)                        null,
+    vocabulary   varchar(512)                        null,
+    stock_sector varchar(512)                        null,
+    extend_data varchar(512)                        null,
+    timestamp    timestamp default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP
+) DEFAULT CHARSET=utf8mb4;
+
+
+create table department1
+(
+    id              int auto_increment
+        primary key,
+    realtimedata_id varchar(125)                        null,
+    department      varchar(1024)                       null,
+    location        varchar(255)                        null,
+    extend_data varchar(512)                        null,
+    timestamp       timestamp default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP
+)DEFAULT CHARSET=utf8mb4;
