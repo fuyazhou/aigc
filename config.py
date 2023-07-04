@@ -1,5 +1,7 @@
 # openai key
 openai_api_key = "hVaNL4EHBl5PbUoc3fuZT3BlbkFJiRyIxlPqVVSdRRI96dVt"
+# webpilot key
+webpilot_key = 'BBearer b2eea1d2008249ad950e8254c962d10e'
 # google search key ,配置地址：https://serpapi.com/
 google_search_api_key = "83bd9d6ce07a161441f4cdbc234456c79ebdf677a8d706d4b5dfcb0e962c2b05"
 # 数据（数据库保存的位置）

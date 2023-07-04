@@ -5,6 +5,7 @@ from logging import getLogger
 import pandas as pd
 import os
 import openai
+import requests
 from langchain.llms import AzureOpenAI
 from langchain.chat_models import ChatOpenAI
 from langchain.llms import OpenAI
@@ -236,3 +237,32 @@ def similarity_search(faiss_path, data_path, query):
         logger.warning(f"An error occurred: {str(e)}")
         logger.warning("Something went wrong during similarity_search")
         return query
+
+
+def webpilot_query(content):
+    try:
+        print("\n\n*********start webpilot_query *************\n\n")
+        content = str(content)[0:3000]
+        url = 'https://preview.webpilotai.com/api/v1/watt'
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': webpilot_key
+        }
+        data = {
+            'Content': content
+        }
+
+        response = requests.post(url, headers=headers, data=json.dumps(data))
+
+        if response.status_code == 200:
+            result = response.json()
+            print(
+                f"\n\n****** webpilot query = {content}, result= {str(result)} \n\n")
+            return result['content']
+        else:
+            print("\n\n********* webpilot_query somthing wrong *************")
+            print('Error: {}'.format(response.status_code))
+            return content
+    except:
+        print("\n\n********* webpilot_query somthing wrong *************")
+        return content
