@@ -5,7 +5,6 @@ from logging import getLogger
 import pandas as pd
 import os
 import openai
-from langchain.llms import AzureOpenAI
 from langchain.chat_models import ChatOpenAI
 from langchain.llms import OpenAI
 from langchain import PromptTemplate, LLMChain
@@ -20,7 +19,7 @@ from langchain.schema import (
     HumanMessage,
     SystemMessage
 )
-
+import re
 from config import *
 import os
 
@@ -101,3 +100,14 @@ def search(query):
         return str(res["answer_box"])[0:1600]
     else:
         return str(get_goolge_organic_results(res))[0:1600]
+
+
+
+
+def check_taiwan(sentence):
+    sentence=str(sentence).lower().replace(" ","").replace("\n","")
+    pattern = r"(台.{0,4}湾|台.{0,4}弯|tai.{0,4}wan)"
+    match = re.search(pattern, sentence, flags=re.IGNORECASE)
+    if match:
+        return 1
+    return 0

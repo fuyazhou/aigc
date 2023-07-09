@@ -20,7 +20,10 @@ def free_dialogue():
         logger.info(f"free_dialogue input  is  {str(data)}")
         user_query = data['query']
         user_id = data["user_id"]
-        result = get_free_dialogue_answer(user_id, user_query)
+        if check_taiwan(user_query) == 1:
+            result = taiwan
+        else:
+            result = get_free_dialogue_answer(user_id, user_query)
         response_data = {
             'id': user_id,  # Generate a unique ID
             'result': result
