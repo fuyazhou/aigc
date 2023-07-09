@@ -1,24 +1,31 @@
-import langchain
-from langchain.chat_models import ChatOpenAI
-from util import summarize, get_google_search_results, get_goolge_related_questions
-from util import get_goolge_organic_results, save_search_content, similarity_search
-import os, logging, json, fire
-import pandas as pd
-from langchain.schema import (
-    HumanMessage,
-    SystemMessage
-)
-from config import *
+from free_dialogue import *
+import logging
+from flask import Flask, request
 
-logging.basicConfig(filename='app.log', level=logging.DEBUG,
-                    format='%(asctime)s %(levelname)s: %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S')
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+file_handler = logging.FileHandler('app.log')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
 
-os.environ["OPENAI_API_KEY"] = openai_api_key
-chat = ChatOpenAI(
-)
+app = Flask(__name__)
 
-if __name__ == '__main__':
-    fire.Fire(main)
 
+@app.route('/free_dialogue', methods=['POST'])
+def free_dialogue():
+    try:
+        logger.info("*******start free_dialogue server *******")
+        data = request.get_json()
+        logger.info(f"free_dialogue input  is  {str(data)}")
+        user_query = data['query']
+        user_id = data["user_id"]
+        result = get_free_dialogue_answer(user_id, user_query)
+        response_data = {
+            'id': user_id,  # Generate a unique ID
+            'result': result
+        }
+        return response_data
+    except Exception as e:
+        logger.warning("An error occurred during question answering:")
+        return str(e)
