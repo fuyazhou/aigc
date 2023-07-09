@@ -11,10 +11,10 @@ def generate():
     result = {}
 
     if generate_data_query != "None":
-        result['generate_data'] = generate_data(generate_data_query)
+        result['generate_data']
 
     if generate_article_query != "None":
-        result['generate_article'] = generate_article(generate_article_query)
+        result['generate_article']
 
     if generate_data_query == "None" and generate_article_query == "None":
         return "Please input generate_data_query or generate_article_query"
