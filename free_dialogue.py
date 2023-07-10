@@ -32,7 +32,7 @@ logger = getLogger()
 
 class CustomSearchTool(BaseTool):
     name = "search tool"
-    description = "一个搜索引擎。 当你需要回答有关时事的问题或者计算问题调用该工具，否则不要使用该工具。 输入应该是搜索查询。"
+    description = "一个搜索引擎。 当你需要回答有关实时的问题或者计算的问题调用该工具，否则不要使用该工具。 输入应该是搜索查询。"
 
     def _run(self, query: str) -> str:
         """Use the tool."""
@@ -46,7 +46,7 @@ class CustomSearchTool(BaseTool):
 # You can create the tool to pass to an agent
 chat_tool = Tool(
     name="Chat",
-    description="一个非常有用的助理，可以回答常见的问题，比如写文章、规划行程、等等，用中文回答问题",
+    description="一个非常有用的助理，你可以回答除了实时问题或者计算问题以外的任何问题，用中文回答问题",
     func=chat_model_chain.run,
     return_direct=True
 
@@ -69,5 +69,7 @@ def get_free_dialogue_answer(user_id, query):
 
 
 if __name__ == '__main__':
-    query = "农夫山泉的市值"
-    get_free_dialogue_answer(query)
+    query = "建一个笑话"
+    user_id = "122324"
+    res = get_free_dialogue_answer(user_id, query)
+    print(str(res))

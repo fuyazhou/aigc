@@ -96,16 +96,16 @@ def get_goolge_organic_results(json_data):
 
 def search(query):
     res = get_google_search_results(query)
+    if 'error' in str(res)[:40]:
+        logger.info("something wrong with serper api")
     if "answer_box" in res:
         return str(res["answer_box"])[0:1600]
     else:
         return str(get_goolge_organic_results(res))[0:1600]
 
 
-
-
 def check_taiwan(sentence):
-    sentence=str(sentence).lower().replace(" ","").replace("\n","")
+    sentence = str(sentence).lower().replace(" ", "").replace("\n", "")
     pattern = r"(台.{0,4}湾|台.{0,4}弯|tai.{0,4}wan)"
     match = re.search(pattern, sentence, flags=re.IGNORECASE)
     if match:
