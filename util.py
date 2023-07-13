@@ -1,7 +1,7 @@
 import langchain
 from serpapi import GoogleSearch
 import json
-from logging import getLogger
+import logging
 import pandas as pd
 import os
 import openai
@@ -23,7 +23,12 @@ import re
 from config import *
 import os
 
-logger = getLogger()
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+file_handler = logging.FileHandler('app.log')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
 
 
 def get_google_search_results(query):
@@ -33,6 +38,8 @@ def get_google_search_results(query):
             "q": query,
             "gl": "cn",
             "hl": "zh-cn",
+            "num": 5,
+            "no_cache": True,
             "api_key": SERPAPI_API_KEY
         }
 
@@ -107,6 +114,15 @@ def search(query):
 def check_taiwan(sentence):
     sentence = str(sentence).lower().replace(" ", "").replace("\n", "")
     pattern = r"(台.{0,4}湾|台.{0,4}弯|tai.{0,4}wan)"
+    match = re.search(pattern, sentence, flags=re.IGNORECASE)
+    if match:
+        return 1
+    return 0
+
+
+def check_who(sentence):
+    sentence = str(sentence).lower().replace(" ", "").replace("\n", "")
+    pattern = r"(你.{0,3}谁|你叫.{0,4}什么|who.{0,4}you|what.{0,5}name)"
     match = re.search(pattern, sentence, flags=re.IGNORECASE)
     if match:
         return 1

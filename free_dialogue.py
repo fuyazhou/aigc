@@ -69,7 +69,7 @@ def get_free_dialogue_answer(user_id, query):
 
 
 if __name__ == '__main__':
-    query = "建一个笑话"
+    query = "北京时间"
     user_id = "122324"
     res = get_free_dialogue_answer(user_id, query)
     print(str(res))

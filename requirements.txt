@@ -13,3 +13,5 @@ tiktoken
 pandas
 scikit-learn
 panel
+mysqlclient
+pymysql
