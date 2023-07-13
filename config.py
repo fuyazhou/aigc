@@ -1,5 +1,5 @@
 # openai key
-openai_api_key = "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"
+openai_api_key = "YpHNBz59bO2SWVjMMnvRT3BlbkFJywzWw44q7ldMUN8QyYLc"
 # google search key ,配置地址：https://serpapi.com/
 SERPAPI_API_KEY = "034c5696b6b2b8322796f6a4de03af33b59f138c8252a57ff0f53aca06c41547"
 
