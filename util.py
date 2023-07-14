@@ -38,7 +38,7 @@ def get_google_search_results(query):
             "q": query,
             "gl": "cn",
             "hl": "zh-cn",
-            "num": 5,
+            "num": 3,
             "no_cache": True,
             "api_key": SERPAPI_API_KEY
         }
@@ -46,7 +46,7 @@ def get_google_search_results(query):
         search = GoogleSearch(params)
         results = search.get_dict()
         # results = json.dumps(results,ensure_ascii=False)
-        logger.info(f"get_google_sear5ch_results out is(result) {results}")
+        logger.info(f"get_google_sear5ch_results out is(result) {str(results)[0:300]}")
         return results
 
     except Exception as e:

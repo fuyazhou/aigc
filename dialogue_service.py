@@ -4,6 +4,7 @@
 import os
 import sys
 import openai
+import re
 from duckduckgo_search import ddg
 from langchain.document_loaders import UnstructuredFileLoader
 from langchain.agents import AgentType, Tool, initialize_agent, tool
@@ -117,6 +118,11 @@ class Dialogue_Service:
                 joined_page_text = "\n".join(all_page_text)
                 docs.append(joined_page_text)
         logger.info("*******load data done********")
+        docs_more = []
+        docs_more.extend(re.split("第[一二三四五六七八九十]{0,3}[条]", docs[0]))
+        docs_more.extend(re.split("第[一二三四五六七八九十]{0,3}[条]", docs[1]))
+        docs_more.extend(re.split("第[一二三四五六七八九十]{0,3}[章]", docs[2]))
+        docs = docs_more
         logger.info(f"total have {len(docs)} datas")
         text_splitter = CharacterTextSplitter(chunk_size=2000, chunk_overlap=700, separator="\n")
         documents = text_splitter.create_documents(docs)
@@ -134,7 +140,8 @@ class Dialogue_Service:
         # Run chain
         self.character_dialogue_precision_qa_chain = RetrievalQA.from_chain_type(
             llm,
-            retriever=self.db.as_retriever(search_type="mmr"),
+            # retriever=self.db.as_retriever(search_type="mmr"),
+            retriever=self.db.as_retriever(),
             return_source_documents=True,
             chain_type_kwargs={"prompt": QA_CHAIN_PROMPT}
         )
