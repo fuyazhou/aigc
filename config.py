@@ -1,5 +1,7 @@
 # openai key
-
+openai_api_key = "dds"
+# google search key ,配置地址：https://serpapi.com/
+SERPAPI_API_KEY = "034c5696b6b2b8322796f6a4de03af33b59f138c8252a57ff0f53aca06c41547"
 
 docs_path = "/home/ubuntu/gpt/data"
 vector_store_path = "/home/ubuntu/gpt/vector_store"
