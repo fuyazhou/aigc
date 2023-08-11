@@ -44,3 +44,16 @@ Use the provided articles delimited by triple quotes to answer questions,尽可�
 Question:{question}
 
 '''
+
+
+
+template_contract = """
+已知内容: 
+{context}
+\n\n
+
+根据上面的内容模版，结合下面的问题查找所需要的合同模版，并直接输出，答案请使用中文:
+问题:{question}
+
+如果无法从中得到答案，请说 "根据已知信息无法回答该问题" 或 "没有提供足够的相关信息"，不允许在答案中添加编造成分。
+"""

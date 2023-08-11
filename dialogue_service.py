@@ -75,7 +75,7 @@ class Dialogue_Service:
                     joined_page_text = "\n".join(all_page_text)
                     docs.append(joined_page_text)
 
-                if sub_data_path.endswith('.docx'):
+                if sub_data_path.endswith('.docx') or sub_data_path.endswith('.doc'):
                     print(sub_data_path)
                     loader = Docx2txtLoader(f'{data_path}/{sub_data_path}')
                     doc = loader.load()
@@ -103,7 +103,7 @@ class Dialogue_Service:
                 joined_page_text = "\n".join(all_page_text)
                 docs.append(joined_page_text)
 
-            if data_path.endswith('.docx'):
+            if data_path.endswith('.docx') or data_path.endswith('.doc'):
                 print(data_path)
                 loader = Docx2txtLoader(data_path)
                 doc = loader.load()
@@ -118,13 +118,13 @@ class Dialogue_Service:
                 joined_page_text = "\n".join(all_page_text)
                 docs.append(joined_page_text)
         logger.info("*******load data done********")
-        docs_more = []
-        docs_more.extend(re.split("第[一二三四五六七八九十]{0,3}[条]", docs[0]))
-        docs_more.extend(re.split("第[一二三四五六七八九十]{0,3}[条]", docs[1]))
-        docs_more.extend(re.split("第[一二三四五六七八九十]{0,3}[章]", docs[2]))
-        docs = docs_more
+        # docs_more = []
+        # docs_more.extend(re.split("第[一二三四五六七八九十]{0,3}[条]", docs[0]))
+        # docs_more.extend(re.split("第[一二三四五六七八九十]{0,3}[条]", docs[1]))
+        # docs_more.extend(re.split("第[一二三四五六七八九十]{0,3}[章]", docs[2]))
+        # docs = docs_more
         logger.info(f"total have {len(docs)} datas")
-        text_splitter = CharacterTextSplitter(chunk_size=2000, chunk_overlap=700, separator="\n")
+        text_splitter = CharacterTextSplitter(chunk_size=8000, chunk_overlap=700, separator="\n")
         documents = text_splitter.create_documents(docs)
         return documents
 
@@ -136,14 +136,15 @@ class Dialogue_Service:
 
     def init_character_dialogue_precision_qa_chain(self):
         logger.info("********** init  character_dialogue_precision_qa_chain**********")
-        QA_CHAIN_PROMPT = PromptTemplate.from_template(prompt_template.template3)
+        QA_CHAIN_PROMPT = PromptTemplate.from_template(prompt_template.template_contract)
         # Run chain
         self.character_dialogue_precision_qa_chain = RetrievalQA.from_chain_type(
             llm,
             # retriever=self.db.as_retriever(search_type="mmr"),
             retriever=self.db.as_retriever(),
             return_source_documents=True,
-            chain_type_kwargs={"prompt": QA_CHAIN_PROMPT}
+            chain_type_kwargs={"prompt": QA_CHAIN_PROMPT},
+            k=1
         )
 
     # def load_vector_store(self, path):
@@ -154,12 +155,6 @@ class Dialogue_Service:
     #     return self.vector_store
 
     def character_dialogue_precision_qa(self, query):
-        """
-        角色对话-精准：
-            【精准模式】中提问只返回本地知识库的数据，如未搜索到则返回暂未学习。
-            例：问题；残疾人。答案：残疾人的介绍、残疾人的相关政策、申请残疾人证的办理流程等。
-            :return:
-        """
         try:
             result = self.character_dialogue_precision_qa_chain(query)
             result = result["result"]

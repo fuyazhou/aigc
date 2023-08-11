@@ -125,5 +125,5 @@ def check_who(sentence):
     pattern = r"(你.{0,3}谁|你叫.{0,4}什么|who.{0,4}you|what.{0,5}name)"
     match = re.search(pattern, sentence, flags=re.IGNORECASE)
     if match:
-        return 1
-    return 0
+        return True
+    return False

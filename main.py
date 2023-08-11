@@ -15,16 +15,6 @@ dialogue_service = Dialogue_Service()
 dialogue_service.init_source_vector()
 dialogue_service.init_character_dialogue_precision_qa_chain()
 
-# query = "你好"
-# result = dialogue_service.character_dialogue_precision_qa(query)
-# print(result)
-# query = "人才补贴"
-# result = dialogue_service.character_dialogue_precision_qa(query)
-# print(result)
-# query = "残疾人"
-# result = dialogue_service.character_dialogue_precision_qa(query)
-# print(result)
-
 app = Flask(__name__)
 
 
@@ -59,7 +49,7 @@ def free_dialogue():
         return response_data
 
 
-@app.route('/character_dialogue_precision', methods=['POST'])
+@app.route('/get_contract', methods=['POST'])
 def character_dialogue_precision():
     user_id = ""
     try:
