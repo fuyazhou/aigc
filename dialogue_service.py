@@ -141,10 +141,9 @@ class Dialogue_Service:
         self.character_dialogue_precision_qa_chain = RetrievalQA.from_chain_type(
             llm,
             # retriever=self.db.as_retriever(search_type="mmr"),
-            retriever=self.db.as_retriever(),
+            retriever=self.db.as_retriever(search_kwargs={'k': 1}),
             return_source_documents=True,
             chain_type_kwargs={"prompt": QA_CHAIN_PROMPT},
-            k=1
         )
 
     # def load_vector_store(self, path):
@@ -168,14 +167,14 @@ if __name__ == '__main__':
     dialogue_service = Dialogue_Service()
     dialogue_service.init_source_vector()
     dialogue_service.init_character_dialogue_precision_qa_chain()
-    query = "你好"
+    query = "合同"
     result = dialogue_service.character_dialogue_precision_qa(query)
     print(result)
 
-    query = "人才补贴"
+    query = "合同"
     result = dialogue_service.character_dialogue_precision_qa(query)
     print(result)
 
-    query = "残疾人"
+    query = "合同"
     result = dialogue_service.character_dialogue_precision_qa(query)
     print(result)
