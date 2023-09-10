@@ -1,17 +1,6 @@
-langchain
-google-search-results
-duckduckgo-search
-openai
-tiktoken
-faiss-cpu
-pandas
-fire
-flask
-pypdf
-chromadb
-tiktoken
-pandas
-scikit-learn
-panel
-mysqlclient
-pymysql
+!pip install datasets evaluate transformers[sentencepiece]
+!pip install accelerate
+# To run the training on TPU, you will need to uncomment the following line:
+# !pip install cloud-tpu-client==0.10 torch==1.9.0 https://storage.googleapis.com/tpu-pytorch/wheels/torch_xla-1.9-cp37-cp37m-linux_x86_64.whl
+!apt install git-lfs
+!pip install -U git+https://github.com/huggingface/transformers@de9255de27abfcae4a1f816b904915f0b1e23cd9
