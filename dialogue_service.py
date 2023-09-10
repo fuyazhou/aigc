@@ -52,8 +52,17 @@ class Dialogue_Service:
             :return:
         """
         logger.info("******* init_source_vector ******")
-        self.db = FAISS.from_documents(self.load_data(self.docs_path), embedding)
-        self.db.save_local(self.db_path)
+
+        # 如果 load_local=True 直接从保存的向量库中加载索引， 否则从文本中加载（先用openai embedding model 转化为向量）
+        load_local = True
+        if load_local:
+            self.db = FAISS.load_local(self.db_path, embedding)
+        else:
+            db1 = FAISS.load_local(self.db_path, embedding)
+            self.db = FAISS.from_documents(self.load_data(self.docs_path), embedding)
+            self.db.merge_from(db1)
+            self.db.save_local(self.db_path)
+
         logger.info("******* init_source_vector done ******")
 
     def load_data(self, data_path):
@@ -78,11 +87,14 @@ class Dialogue_Service:
                 if sub_data_path.endswith('.docx') or sub_data_path.endswith('.doc'):
                     print(sub_data_path)
                     loader = Docx2txtLoader(f'{data_path}/{sub_data_path}')
-                    doc = loader.load()
+                    try:
+                        doc = loader.load()
 
-                    all_page_text = [p.page_content for p in doc]
-                    joined_page_text = "\n".join(all_page_text)
-                    docs.append(joined_page_text)
+                        all_page_text = [p.page_content for p in doc]
+                        joined_page_text = "\n".join(all_page_text)
+                        docs.append(joined_page_text)
+                    except:
+                        pass
 
                 if sub_data_path.endswith('.pdf'):
                     print(sub_data_path)
