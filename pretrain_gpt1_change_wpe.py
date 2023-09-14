@@ -11,6 +11,8 @@ from torch.utils.data.dataloader import DataLoader
 from accelerate import Accelerator
 from torch.optim import AdamW
 from transformers import get_scheduler
+from datasets import *
+import numpy as np
 
 # from tqdm.notebook import tqdm
 
@@ -18,7 +20,7 @@ from transformers import get_scheduler
 accelerator = Accelerator()
 
 context_length = 1280
-batch_size = 8
+batch_size = 1
 weight_decay = 0.1
 lr = 5e-4
 num_train_epochs = 1000
@@ -39,14 +41,26 @@ dataset = load_dataset("parquet", data_files={'train': '/home/lushi02/scGPT2/dat
 # vocab = scgpt.tokenizer.GeneVocab.from_file('/home/lushi02/scGPT2/singlecell_gpt/data/default_census_vocab.json')
 vocab = scgpt.tokenizer.GeneVocab.from_file('/home/lushi02/scGPT2/data/8.scb/gene_vocab.json')
 
-cls_id = dataset['train'][0]['gene_ids'][0]
-pad_id = dataset['train'][0]['gene_ids'][-1]
+dataset = dataset["train"]
+target_values = np.array(dataset['target_values']).astype(int).tolist()
+gene_ids = np.array(dataset['gene_ids']).astype(int).tolist()
 
-vocab_size = len(vocab)
+dataset_dict = {"target_values": target_values, "gene_ids": gene_ids}
+dataset = Dataset.from_dict(dataset_dict)
 
-seq_length = len(dataset['train'][0]['gene_ids'])
-dataset = dataset.remove_columns(['target_values'])
-tokenized_dataset = dataset['train'].rename_column("gene_ids", "position_ids").rename_column("target_values",
+# new_features=dataset['train'].features.copy()
+# new_features["target_values"] = Value("int64")
+# dataset['train'].cast(new_features)
+
+cls_id = dataset[0]['target_values'][0]
+pad_id = dataset[0]['target_values'][-1]
+
+position_size = len(vocab)
+vocab_size = max(max(dataset['target_values']))
+
+seq_length = len(dataset[0]['gene_ids'])
+# dataset = dataset.remove_columns(['values'])
+tokenized_dataset = dataset.rename_column("gene_ids", "position_ids").rename_column("target_values",
                                                                                              "input_ids")
 tokenized_dataset = tokenized_dataset.train_test_split(test_size=0.2, seed=42)
 
@@ -71,10 +85,7 @@ config = GPT2Config(
 config.n_positions = context_length
 
 model = GPT2LMHeadModel(config)
-
-# embed_dim = 768
-# model.transformer.wpe = nn.Embedding(len(vocab_size) + 3, embed_dim)
-
+model.transformer.wpe = nn.Embedding(position_size + 3, config.n_embd)
 
 model_size = sum(t.numel() for t in model.parameters())
 print(f"GPT-2 size: {model_size / 1000 ** 2:.1f}M parameters")
@@ -118,7 +129,8 @@ def evaluate():
     losses = []
     for step, batch in enumerate(eval_dataloader):
         with torch.no_grad():
-            outputs = model(batch["input_ids"], labels=batch["input_ids"])
+            # outputs = model(batch["input_ids"], labels=batch["input_ids"])
+            outputs = model(input_ids=batch["input_ids"], position_ids=batch["position_ids"], labels=batch["input_ids"])
 
         losses.append(accelerator.gather(outputs.loss))
     # loss = torch.mean(torch.cat(losses))
@@ -155,7 +167,7 @@ for epoch in range(num_train_epochs):
     ):
         # for step, batch in (enumerate(train_dataloader, start=1)):
         logits = model(batch["input_ids"]).logits
-        # logits = model(input_ids = batch["input_ids"],position_ids=something).logits
+        # logits = model(input_ids=batch["input_ids"], position_ids=batch["position_ids"]).logits
 
         loss = keytoken_weighted_loss(batch["input_ids"], logits)
         # print(f"step {step}")

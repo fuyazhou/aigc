@@ -11,6 +11,7 @@ from torch.utils.data.dataloader import DataLoader
 from accelerate import Accelerator
 from torch.optim import AdamW
 from transformers import get_scheduler
+import numpy as np
 
 # from tqdm.notebook import tqdm
 
@@ -18,7 +19,7 @@ from transformers import get_scheduler
 accelerator = Accelerator()
 
 context_length = 1280
-batch_size = 8
+batch_size = 8  # 8
 weight_decay = 0.1
 lr = 5e-4
 num_train_epochs = 1000
@@ -38,15 +39,42 @@ from scgpt.tokenizer.gene_tokenizer import GeneVocab
 dataset = load_dataset("parquet", data_files={'train': '/home/lushi02/scGPT2/data/binned/databanks_binned.parquet'})
 # vocab = scgpt.tokenizer.GeneVocab.from_file('/home/lushi02/scGPT2/singlecell_gpt/data/default_census_vocab.json')
 vocab = scgpt.tokenizer.GeneVocab.from_file('/home/lushi02/scGPT2/data/8.scb/gene_vocab.json')
+#
+# cls_id = dataset['train'][0]['gene_ids'][0]
+# pad_id = dataset['train'][0]['gene_ids'][-1]
+#
+# vocab_size = len(vocab)
+#
+# seq_length = len(dataset['train'][0]['gene_ids'])
+# dataset = dataset.remove_columns(['values', 'target_values'])
+# tokenized_dataset = dataset['train'].rename_column("gene_ids", "input_ids")
+# tokenized_dataset = tokenized_dataset.train_test_split(test_size=0.2, seed=42)
 
-cls_id = dataset['train'][0]['gene_ids'][0]
-pad_id = dataset['train'][0]['gene_ids'][-1]
 
-vocab_size = len(vocab)
+dataset = dataset["train"]
+target_values = np.array(dataset['target_values']).astype(int).tolist()
+gene_ids = np.array(dataset['gene_ids']).astype(int).tolist()
 
-seq_length = len(dataset['train'][0]['gene_ids'])
-dataset = dataset.remove_columns(['values', 'target_values'])
-tokenized_dataset = dataset['train'].rename_column("gene_ids", "input_ids")
+dataset_dict = {"target_values": target_values, "gene_ids": gene_ids}
+dataset = Dataset.from_dict(dataset_dict)
+
+cls_id = dataset[0]['target_values'][0]
+pad_id = dataset[0]['target_values'][-1]
+
+# position_size = len(vocab)
+# vocab_size = max(max(dataset['target_values']))
+
+seq_length = len(dataset[0]['gene_ids'])
+# dataset = dataset.remove_columns(['values'])
+
+# 使用target_values训练
+tokenized_dataset = dataset.rename_column("gene_ids", "position_ids").rename_column("target_values", "input_ids")
+vocab_size = max(max(dataset['target_values']))
+
+# 使用gene_ids训练
+# tokenized_dataset = dataset.rename_column("gene_ids", "input_ids").rename_column("target_values", "position_ids")
+# vocab_size = len(vocab)
+
 tokenized_dataset = tokenized_dataset.train_test_split(test_size=0.2, seed=42)
 
 tokenized_dataset.set_format("torch")
