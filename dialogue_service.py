@@ -7,6 +7,7 @@ import openai
 import re
 from duckduckgo_search import ddg
 from langchain.document_loaders import UnstructuredFileLoader
+from langchain.document_loaders import UnstructuredEPubLoader
 from langchain.agents import AgentType, Tool, initialize_agent, tool
 from langchain.llms import OpenAI
 from langchain.tools import BaseTool
@@ -28,7 +29,7 @@ import logging
 os.environ["OPENAI_API_KEY"] = config.openai_api_key
 os.environ["SERPAPI_API_KEY"] = config.SERPAPI_API_KEY
 
-embedding = OpenAIEmbeddings()
+embedding = OpenAIEmbeddings(chunk_size = 1)
 llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-16k")
 
 logger = logging.getLogger(__name__)
@@ -46,7 +47,7 @@ class Dialogue_Service:
         self.docs_path = config.docs_path
         self.db_path = config.vector_store_path
 
-    def init_source_vector(self):
+    def init_source_vector(self, load_local):
         """
             初始化本地知识库向量
             :return:
@@ -54,13 +55,13 @@ class Dialogue_Service:
         logger.info("******* init_source_vector ******")
 
         # 如果 load_local=True 直接从保存的向量库中加载索引， 否则从文本中加载（先用openai embedding model 转化为向量）
-        load_local = True
+        # load_local = True
         if load_local:
             self.db = FAISS.load_local(self.db_path, embedding)
         else:
-            db1 = FAISS.load_local(self.db_path, embedding)
+            # db1 = FAISS.load_local(self.db_path, embedding)
             self.db = FAISS.from_documents(self.load_data(self.docs_path), embedding)
-            self.db.merge_from(db1)
+            # self.db.merge_from(db1)
             self.db.save_local(self.db_path)
 
         logger.info("******* init_source_vector done ******")
@@ -100,10 +101,20 @@ class Dialogue_Service:
                     print(sub_data_path)
                     loader = PyPDFLoader(f'{data_path}/{sub_data_path}')
                     doc = loader.load()
-
                     all_page_text = [p.page_content for p in doc]
                     joined_page_text = "\n".join(all_page_text)
                     docs.append(joined_page_text)
+                if sub_data_path.endswith("epub"):
+                    try:
+                        print(sub_data_path)
+                        loader = UnstructuredEPubLoader(f'{data_path}/{sub_data_path}')
+                        doc = loader.load()
+                        all_page_text = [p.page_content for p in doc]
+                        joined_page_text = "\n".join(all_page_text)
+                        docs.append(joined_page_text)
+                    except:
+                        print(sub_data_path + "  is wrong")
+                        pass
 
         if os.path.isfile(data_path):
             if data_path.endswith('.txt'):
@@ -136,7 +147,12 @@ class Dialogue_Service:
         # docs_more.extend(re.split("第[一二三四五六七八九十]{0,3}[章]", docs[2]))
         # docs = docs_more
         logger.info(f"total have {len(docs)} datas")
-        text_splitter = CharacterTextSplitter(chunk_size=8000, chunk_overlap=700, separator="\n")
+        # text_splitter = CharacterTextSplitter(chunk_size=8000, chunk_overlap=700, separator="\n")
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=3000,
+            chunk_overlap=500,
+            separators=["\n\n", "\n", "(?<=\。 )", " ", ""]
+        )
         documents = text_splitter.create_documents(docs)
         return documents
 
@@ -153,7 +169,7 @@ class Dialogue_Service:
         self.character_dialogue_precision_qa_chain = RetrievalQA.from_chain_type(
             llm,
             # retriever=self.db.as_retriever(search_type="mmr"),
-            retriever=self.db.as_retriever(search_kwargs={'k': 1}),
+            retriever=self.db.as_retriever(search_kwargs={'k': 2}),
             return_source_documents=True,
             chain_type_kwargs={"prompt": QA_CHAIN_PROMPT},
         )
@@ -177,16 +193,16 @@ class Dialogue_Service:
 
 if __name__ == '__main__':
     dialogue_service = Dialogue_Service()
-    dialogue_service.init_source_vector()
+    dialogue_service.init_source_vector(True)
     dialogue_service.init_character_dialogue_precision_qa_chain()
-    query = "合同"
+    query = "成为波伏瓦的作者是谁？"
     result = dialogue_service.character_dialogue_precision_qa(query)
     print(result)
 
-    query = "合同"
+    query = "乔治和弗朗索瓦丝的第二个女儿"
     result = dialogue_service.character_dialogue_precision_qa(query)
     print(result)
 
-    query = "合同"
+    query = "1908年1月9日發生的事情"
     result = dialogue_service.character_dialogue_precision_qa(query)
     print(result)

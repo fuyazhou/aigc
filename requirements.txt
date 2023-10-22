@@ -15,3 +15,5 @@ scikit-learn
 panel
 mysqlclient
 pymysql
+pandoc
+ebooklib

@@ -45,14 +45,23 @@ Question:{question}
 
 '''
 
-
-
 template_contract = """
 已知内容: 
+-----
 {context}
+-----
 \n\n
 
-根据上面的内容模版，结合下面的问题查找所需要的合同模版，答案请使用中文:  
+根据上面的内容，回答或者解释下面的问题，回答请使用中文:  
 问题:{question}
+
+"""
+
+template_summary_news = """
+对下面的新闻进行总结，并分别以中文和英文输出，直接以JSON的格式输出，key为ch、en：
+
+---
+{news}
+---
 
 """

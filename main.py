@@ -1,7 +1,16 @@
+import config
 from free_dialogue import *
 import logging
 from flask import Flask, request
 from dialogue_service import Dialogue_Service
+from flask import Flask, request, jsonify
+import langchain
+from langchain.llms import OpenAI
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts import PromptTemplate
+import prompt_template
+import json
+import logging
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -12,8 +21,13 @@ logger.addHandler(file_handler)
 
 # 初始化对话服务
 dialogue_service = Dialogue_Service()
-dialogue_service.init_source_vector()
+# dialogue_service.init_source_vector(False)
+dialogue_service.init_source_vector(True)
 dialogue_service.init_character_dialogue_precision_qa_chain()
+
+llm_summary = ChatOpenAI(openai_api_key=config.openai_api_key)
+prompt_summary = PromptTemplate.from_template(prompt_template.template_summary_news)
+chain_summary = prompt_summary | llm_summary
 
 app = Flask(__name__)
 
@@ -49,8 +63,8 @@ def free_dialogue():
         return response_data
 
 
-@app.route('/get_contract', methods=['POST'])
-def character_dialogue_precision():
+@app.route('/chat', methods=['POST'])
+def chat():
     user_id = ""
     try:
         logger.info("*******start character_dialogue_precision server *******")
@@ -80,5 +94,31 @@ def character_dialogue_precision():
         return response_data
 
 
+@app.route('/summary', methods=['POST'])
+def summary():
+    data = request.get_json()
+
+    if 'user_id' not in data or 'content' not in data:
+        error_message = "user_id and content must be provided in the input JSON"
+        app.logger.error(error_message)
+        return jsonify({"error": "user_id and content must be provided in the input JSON"}), 400
+
+    user_id = data['user_id']
+    content = data['content']
+
+    res = chain_summary.invoke({"news": content})
+    try:
+        res1 = json.loads(res.content)
+        ch = res1["ch"]
+        en = res1["en"]
+    except:
+        ch = res.content
+        en = res.content
+
+    output_data = {"user_id": user_id, "ch": ch, "en": en}
+    app.logger.info(f"Processed request for user : {user_id}, res: {res.content}")
+    return jsonify(output_data)
+
+
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=22333)
+    app.run(host="0.0.0.0", port=5051)
