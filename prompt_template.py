@@ -58,10 +58,10 @@ template_contract = """
 """
 
 template_summary_news = """
-对下面的新闻进行总结，并分别以中文和英文输出，直接以JSON的格式输出，key为ch、en：
-
 ---
 {news}
 ---
+
+对上面的新闻进行总结，用英文输出
 
 """

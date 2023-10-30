@@ -25,7 +25,7 @@ dialogue_service = Dialogue_Service()
 dialogue_service.init_source_vector(True)
 dialogue_service.init_character_dialogue_precision_qa_chain()
 
-llm_summary = ChatOpenAI(openai_api_key=config.openai_api_key)
+llm_summary = ChatOpenAI(openai_api_key=config.openai_api_key, temperature=0)
 prompt_summary = PromptTemplate.from_template(prompt_template.template_summary_news)
 chain_summary = prompt_summary | llm_summary
 
@@ -106,19 +106,19 @@ def summary():
     user_id = data['user_id']
     content = data['content']
 
-    res = chain_summary.invoke({"news": content})
     try:
-        res1 = json.loads(res.content)
-        ch = res1["ch"]
-        en = res1["en"]
-    except:
-        ch = res.content
+        res = chain_summary.invoke({"news": content})
         en = res.content
+        prompt = "把下面的内容翻译成中文：  \n\n"
+        ch = llm.predict(prompt + en)
+    except:
+        ch = "好像发生了一些错误"
+        en = "something wrong"
 
     output_data = {"user_id": user_id, "ch": ch, "en": en}
-    app.logger.info(f"Processed request for user : {user_id}, res: {res.content}")
+    app.logger.info(f"Processed request for user : {user_id}, res: {str(output_data)}")
     return jsonify(output_data)
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5051)
+    app.run(host="0.0.0.0", port=5050)
